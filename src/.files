@@ -1,0 +1,11 @@
+# XPath 2 engine
+../../xpath.js/src/.files
+#
+adapters/JSONAdapter.js
+#
+classes/JSONNode.js
+#classes/JSONAttr.js
+classes/JSONElement.js
+classes/JSONDocument.js
+# API implementation
+json-xpath.js

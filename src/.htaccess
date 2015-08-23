@@ -1,0 +1,5 @@
+## Rewrite engine
+RewriteEngine on
+
+##
+RewriteRule json.xpath.js ../res/assemble.php?path=../src/

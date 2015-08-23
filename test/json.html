@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>JSON XPath 2.0 query test</title>
+		<script type="text/javascript" src="../src/json.xpath.js"></script>
+		<!--script type="text/javascript" src="../build/work/0.1.0/json.xpath.min.js"></script-->
+		<style>
+			body {
+				font-family: Arial;
+				font-size: 0.8em;
+			}
+		</style>
+	</head>
+	<body>
+		<script>
+			var oJSON	= {
+				'property1':	'value1',
+				'array1':	[
+					{
+						'pro1': 'val11',
+						'pro2': 'val12',
+						//'pro3': 'val13',
+						'pro4': 'val14'
+					},
+					{
+						'pro1': 'val21',
+						//'pro2': 'val22',
+						'pro3': 'val23',
+						'pro4': 'val24',
+					}
+				],
+				'property2':	{
+					'pro1': 'val11',
+					'pro2': 'val12'
+				},
+				'child1':	{
+					'property1': 'child_val1',
+					'property2': 'child_val2',
+					'property3': 'child_val3',
+					'property4': 'child_val4'
+				},
+				'property3':	'value3'
+			};
+
+			var oScope	= {
+				'var_number': 5,
+				'var_string': 'World!',
+				'var_boolean': true,
+				'var_json': {'field':'value'}
+			};
+
+			var aSuite	= [
+				["1+1", [2]],
+				["3 * $var_number", [15]],
+				["concat('Hello, ', $var_string)", ['Hello, World!']],
+				["$var_boolean instance of xs:boolean", [true]],
+				["$var_json/field", ['value']],
+				["fn:root()", [oJSON]],
+				["fn:count(//*)", [18]],
+				["count(//*/ancestor::node())", [5]],
+				["//*[pro1]", [oJSON.array1[0], oJSON.array1[1], oJSON.property2]],
+				["/property1", [oJSON.property1]],
+				["property1", [oJSON.property1]],
+				["fn:string(property1)", [oJSON.property1]],
+				["//property1", [oJSON.property1, oJSON.child1.property1]],
+				["/descendant-or-self::property1[2]", [oJSON.child1.property1]],
+				["//property4/parent::node()", [oJSON.child1]],
+				["array1", oJSON.array1],
+				["array1[pro4='val24']/pro1", [oJSON.array1[1].pro1]],
+				["array1/pro2/following-sibling::*", [oJSON.array1[0].pro4]],
+				["array1/pro2/preceding-sibling::*", [oJSON.array1[0].pro1]],
+				["child1", [oJSON.child1]],
+				["child1/property1", [oJSON.child1.property1]],
+				["child1/child::*", [oJSON.child1.property1, oJSON.child1.property2, oJSON.child1.property3, oJSON.child1.property4]],
+				["for $a in //*[fn:contains(pro1, 'val1')]/pro1 return $a cast as xs:string", [oJSON.array1[0].pro1, oJSON.property2.pro1]]
+			];
+
+			function compare(expected, returned) {
+				if (expected.length != returned.length)
+					return false;
+				for (var nIndex = 0, nLength = expected.length; nIndex < nLength; nIndex++)
+					if (expected[nIndex] != returned[nIndex])
+						return false;
+				return true;
+			};
+
+			var html	= [];
+			html.push('<table border="1">');
+			html.push(	'<thead>');
+			html.push(		'<tr>');
+			html.push(			'<th>Query</th>');
+			html.push(			'<th>Expected</th>');
+			html.push(			'<th>Returned</th>');
+			html.push(		'</tr>');
+			html.push(	'</thead>');
+			html.push(	'<tbody>');
+			for (var n = 0, result; n < aSuite.length; n++) {
+				html.push(	'<tr>');
+				html.push(		'<td>' + aSuite[n][0] + '</td>');
+				html.push(		'<td>' + aSuite[n][1] + '</td>');
+				//
+				try {
+					result	= JSON.xpath(aSuite[n][0], oJSON, oScope);
+					html.push(	'<td style="color:' + (compare(result, aSuite[n][1]) ? 'green' : 'red') + '">' + result + '</td>');
+				}
+				catch (e) {
+					result	= [];
+					html.push(	'<td style="color:gray">' + e.message + '</td>');
+				}
+				html.push(	'</tr>');
+			}
+			html.push(	'</tbody>');
+			html.push('</table>');
+
+			document.write(html.join(''));
+		</script>
+	</body>
+</html>
