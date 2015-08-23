@@ -7,6 +7,6 @@ Query JSON objects with XPath 2.0
 
 ## API
 
-(array) JSON.xpath(expression[, context[, scope]])
+`(array) JSON.xpath(expression[, context[, scope]])`
 
-Here: 'expression' is the XPath 2.0 query string, 'context' - JSON object to be evaluated, 'scope' - an object with variables to be exposed to evaluation engine at runtime.
+Here: `expression` is the XPath 2.0 query string, `context` - JSON object to be evaluated, `scope` - hash object with variables to be exposed to evaluation engine at runtime.
