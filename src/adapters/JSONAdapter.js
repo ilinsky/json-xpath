@@ -1,8 +1,7 @@
 var cJSONDOMAdapter	= new cDOMAdapter;
 cJSONDOMAdapter.getProperty	= function(oNode, sName) {
 	if (sName == "textContent")
-		if (typeof oNode.nodeValue == "string")
-			return oNode.nodeValue;
+		return oNode.nodeValue;
 	return oNode[sName];
 };
 cJSONDOMAdapter.compareDocumentPosition	= function(oNode, oChild) {
