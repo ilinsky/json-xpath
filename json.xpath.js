@@ -1,12 +1,12 @@
 /*
- * JSON XPath 2.0 query library v0.1.0
+ * JSON XPath 2.0 query library v0.1.1
  * https://github.com/ilinsky/json-xpath
- * Copyright 2015, Sergey Ilinsky
+ * Copyright 2016, Sergey Ilinsky
  * Dual licensed under the MIT and GPL licenses.
  *
  * Includes xpath.js - XPath 2.0 implementation in JavaScript
  * https://github.com/ilinsky/xpath.js
- * Copyright 2015, Sergey Ilinsky
+ * Copyright 2016, Sergey Ilinsky
  * Dual licensed under the MIT and GPL licenses.
  *
  */
@@ -4889,7 +4889,7 @@ hStaticContext_operators["numeric-divide"]	= function(oLeft, oRight) {
 };
 
 hStaticContext_operators["numeric-integer-divide"]	= function(oLeft, oRight) {
-	return new cXSInteger(~~(oLeft / oRight));
+	return new cXSInteger(cMath.floor(oLeft / oRight));
 };
 
 hStaticContext_operators["numeric-mod"]	= function(oLeft, oRight) {
@@ -5734,9 +5734,15 @@ fStaticContext_defineSystemFunction("max",	[[cXSAnyAtomicType, '*'], [cXSString,
 	
 		try {
 		var vValue	= oSequence1[0];
-		for (var nIndex = 1, nLength = oSequence1.length; nIndex < nLength; nIndex++)
-			if (hComparisonExpr_ValueComp_operators['ge'](oSequence1[nIndex], vValue, this).valueOf())
-				vValue	= oSequence1[nIndex];
+		if (vValue instanceof cXSUntypedAtomic)
+			vValue	= cXSDouble.cast(vValue);
+		for (var nIndex = 1, nLength = oSequence1.length, vRight; nIndex < nLength; nIndex++) {
+			vRight	= oSequence1[nIndex];
+			if (vRight instanceof cXSUntypedAtomic)
+				vRight	= cXSDouble.cast(vRight);
+			if (hComparisonExpr_ValueComp_operators['ge'](vRight, vValue, this).valueOf())
+				vValue	= vRight;
+		}
 		return vValue;
 	}
 	catch (e) {
@@ -5753,9 +5759,15 @@ fStaticContext_defineSystemFunction("min",	[[cXSAnyAtomicType, '*'], [cXSString,
 	
 		try {
 		var vValue	= oSequence1[0];
-		for (var nIndex = 1, nLength = oSequence1.length; nIndex < nLength; nIndex++)
-			if (hComparisonExpr_ValueComp_operators['le'](oSequence1[nIndex], vValue, this).valueOf())
-				vValue	= oSequence1[nIndex];
+		if (vValue instanceof cXSUntypedAtomic)
+			vValue	= cXSDouble.cast(vValue);
+		for (var nIndex = 1, nLength = oSequence1.length, vRight; nIndex < nLength; nIndex++) {
+			vRight	= oSequence1[nIndex];
+			if (vRight instanceof cXSUntypedAtomic)
+				vRight	= cXSDouble.cast(vRight);
+			if (hComparisonExpr_ValueComp_operators['le'](vRight, vValue, this).valueOf())
+				vValue	= vRight;
+			}
 		return vValue;
 	}
 	catch (e) {
@@ -6225,8 +6237,7 @@ cJSONDocument.prototype.nodeType	= 9;
 var cJSONDOMAdapter	= new cDOMAdapter;
 cJSONDOMAdapter.getProperty	= function(oNode, sName) {
 	if (sName == "textContent")
-		if (typeof oNode.nodeValue == "string")
-			return oNode.nodeValue;
+		return oNode.nodeValue;
 	return oNode[sName];
 };
 cJSONDOMAdapter.compareDocumentPosition	= function(oNode, oChild) {

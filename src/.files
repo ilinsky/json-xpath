@@ -1,5 +1,5 @@
 # XPath 2 engine
-../../xpath.js/src/.files
+xpath.js/src/.files
 #
 adapters/JSONAdapter.js
 #
